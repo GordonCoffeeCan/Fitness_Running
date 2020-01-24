@@ -6,8 +6,13 @@ public class RotationController : MonoBehaviour {
 
     private Transform gear;
 
-    private float mouseX;
-    private float mouseY;
+    private float mouseX = 0;
+    private float mouseY = 0;
+
+    private const float PrefixSPEED = 30;
+
+    private float physicalSpeed = 0;
+    private float gearSpeed = 0;
 
     private void Awake() {
         gear = this.transform;
@@ -20,11 +25,20 @@ public class RotationController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
-        gear.Rotate(new Vector3(0, 0, Mathf.Abs(mouseY)));
-
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
-        Debug.Log("X = " + mouseX + "; " + "Y = " + mouseY);
+        if (Mathf.Abs(mouseY) > 0) {
+            physicalSpeed = 1f / Mathf.Abs(mouseY);
+            gearSpeed = Mathf.Lerp(gearSpeed, physicalSpeed, 0.01f);
+        } else {
+            gearSpeed = Mathf.Lerp(gearSpeed, 0, 0.3f);
+        }
+
+        
+        Debug.Log(gearSpeed);
+    }
+
+    private void FixedUpdate() {
+        gear.Rotate(new Vector3(0, 0, gearSpeed * PrefixSPEED));
     }
 }
